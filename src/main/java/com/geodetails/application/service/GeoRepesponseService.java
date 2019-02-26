@@ -13,13 +13,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import com.geodetails.application.model.ResponseResultModel;
+import com.geodetails.application.model.ResponseModel;
+import com.geodetails.application.model.ResultsWrapperModel;
 
 @Service
 public class GeoRepesponseService {
@@ -28,11 +30,14 @@ public class GeoRepesponseService {
 
 	@Value("${mockservice.url}")
 	String mockserviceUrl;
+	
+	@Autowired 
+	ResponseModel responseModel;
 
-	public Callable<String> getGeoDetails(String ip) throws InterruptedException {
-		return new Callable<String>() {
+	public Callable<ResponseModel> getGeoDetails(String ip) throws InterruptedException {
+		return new Callable<ResponseModel>() {
 			@Override
-			public String call() throws Exception {
+			public ResponseModel call() throws Exception {
 				RestTemplate restTemplate = new RestTemplate();
 				String resMsg = null;
 				HttpHeaders headers = new HttpHeaders();
@@ -40,24 +45,28 @@ public class GeoRepesponseService {
 				Map<String, String> inpt = new HashMap<String, String>();
 				inpt.put("ip", ip);
 				logger.info(" mockserviceUrl={}  ip={}", mockserviceUrl,ip);
-				ResponseEntity<ResponseResultModel> responseEntity = restTemplate.postForEntity(mockserviceUrl, inpt,
-						ResponseResultModel.class);
-				ResponseResultModel responseResultModel = responseEntity.getBody();
-				logger.info("after post2 res=" + responseResultModel.getResults());
+				ResponseEntity<ResultsWrapperModel> responseEntity = restTemplate.postForEntity(mockserviceUrl, inpt,
+						ResultsWrapperModel.class);
+				ResultsWrapperModel responseResultModel = responseEntity.getBody();
+				logger.info("responseResultModel=" + responseResultModel.getResults());
 				String addrs[] = null;
 				if (responseResultModel.getResults() != null && responseResultModel.getResults().length > 0) {
 					if (responseResultModel.getResults()[0].getFormattedAddressLines() != null
 							&& responseResultModel.getResults()[0].getFormattedAddressLines().length > 2) {
 						addrs = responseResultModel.getResults()[0].getFormattedAddressLines();
 						resMsg = addrs[0] + "," + addrs[1] + "," + addrs[2];
+						responseModel.setResCode("201");
+						responseModel.setResMsg(resMsg);
 					} else {
-						resMsg = "No Full Data Found";
+						responseModel.setResCode(""+HttpStatus.NOT_FOUND);
+						responseModel.setResMsg("No Full Data Found");
 					}
 				} else {
-					resMsg = "No Data Found.";
+					responseModel.setResCode(""+HttpStatus.NOT_FOUND);
+					responseModel.setResMsg("No Data Found.");
 				}
 				logger.info("resMsg={}", resMsg);
-				return resMsg;
+				return responseModel;
 			}
 		};
 	}

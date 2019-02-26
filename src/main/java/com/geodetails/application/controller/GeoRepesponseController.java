@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.async.AsyncRequestTimeoutException;
+
+import com.geodetails.application.model.ResponseModel;
 import com.geodetails.application.service.GeoRepesponseService;
 
 @RestController
@@ -25,7 +27,7 @@ public class GeoRepesponseController {
 	String errorMsg;
 
 	@GetMapping(path = "/geocode")
-	public Callable<String> getGeoDetails(@RequestParam String ip) throws InterruptedException {
+	public Callable<ResponseModel> getGeoDetails(@RequestParam String ip) throws InterruptedException {
 		return geoRepesponseService.getGeoDetails(ip);
 	}
 
