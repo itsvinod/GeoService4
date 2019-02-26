@@ -1,13 +1,16 @@
 package com.geodetails.application.model;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class ResponseModel {
-	String resCode;
+	Integer resCode;
 	String resMsg ;
 	String errMsg ;
-	public String getResCode() {
+	public Integer getResCode() {
 		return resCode;
 	}
-	public void setResCode(String resCode) {
+	public void setResCode(Integer resCode) {
 		this.resCode = resCode;
 	}
 	public String getResMsg() {

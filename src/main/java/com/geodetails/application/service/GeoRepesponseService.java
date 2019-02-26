@@ -55,15 +55,15 @@ public class GeoRepesponseService {
 							&& responseResultModel.getResults()[0].getFormattedAddressLines().length > 2) {
 						addrs = responseResultModel.getResults()[0].getFormattedAddressLines();
 						resMsg = addrs[0] + "," + addrs[1] + "," + addrs[2];
-						responseModel.setResCode("201");
+						responseModel.setResCode(201);
 						responseModel.setResMsg(resMsg);
 					} else {
-						responseModel.setResCode(""+HttpStatus.NOT_FOUND);
+						responseModel.setResCode(HttpStatus.NOT_FOUND.value());
 						responseModel.setResMsg("No Full Data Found");
 					}
 				} else {
-					responseModel.setResCode(""+HttpStatus.NOT_FOUND);
-					responseModel.setResMsg("No Data Found.");
+					responseModel.setResCode(HttpStatus.NOT_FOUND.value());
+					responseModel.setResMsg("No Data Found");
 				}
 				logger.info("resMsg={}", resMsg);
 				return responseModel;
